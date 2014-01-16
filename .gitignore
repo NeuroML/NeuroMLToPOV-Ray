@@ -1,2 +1,5 @@
 *.pov
 *.png
+*.inc*
+SimulationData/*.sh
+SimulationData/*.bat

@@ -13,7 +13,7 @@ import os.path
 import sys
 import os
 
-maxTime = 20
+maxTime = 10
 skip = 5
 
 maxV = 30
