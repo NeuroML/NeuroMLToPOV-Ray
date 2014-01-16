@@ -3,3 +3,6 @@
 *.inc*
 SimulationData/*.sh
 SimulationData/*.bat
+
+SimulationDataCell/*.sh
+SimulationDataCell/*.bat
