@@ -1,0 +1,13 @@
+Input_0:
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 0, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 1, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 5, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 3, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 9, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 8, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 2, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 6, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 11, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 7, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 10, segmentId: 0, fractionAlong: 0.5]
+SingleElectricalInput: [Input: RandomSpikeTrain, cellGroup: MossyFibers, cellNumber: 4, segmentId: 0, fractionAlong: 0.5]
