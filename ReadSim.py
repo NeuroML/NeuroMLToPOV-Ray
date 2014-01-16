@@ -13,13 +13,13 @@ import os.path
 import sys
 import os
 
-maxTime = 10
-skip = 5
+maxTime = 100
+skip = 50
 
-maxV = 30
-minV = -75.0
+maxV = 50.0
+minV = -90.0
 
-povArgs = "-D Antialias=On "
+povArgs = "-D Antialias=On Antialias_Threshold=0.3 Antialias_Depth=4"
 
 def main (args):
 
@@ -162,10 +162,12 @@ def getColorForVolts(v):
 def getRainbowColorForVolts(v):
 
     fract = (v - minV)/(maxV - minV)
+    if fract<0: fract = 0.0
+    if fract>1: fract = 1.0
     #maxCol = [0.6,1,1]
     #minCol = [0,1,1]
     hue = 359 - (120 * fract)
-    return "pigment { color CHSL2RGB(<%f,100,50>) } // %f"%( hue , v)
+    return "pigment { color CHSL2RGB(<%f,100,50>) } // v = %f, fract = %f"%( hue , v, fract)
 
 if __name__ == '__main__':
     main(sys.argv)

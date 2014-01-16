@@ -15,8 +15,12 @@ import shutil
 import sys
 import os
 
+from ReadSim import getColorForVolts
+from ReadSim import getRainbowColorForVolts
+
+
 maxTime = 100
-skip = 50
+skip = 10
 
 dirname="./"
 '''
@@ -160,16 +164,7 @@ def main (args):
 
     #print volts.keys() #to see if the colors are actually changing
 
-def getColorForVolts(v):
-    maxV = 40.0
-    minV = -80.0
 
-    fract = (v - minV)/(maxV - minV)
-    maxCol = [1,1,0]
-    minCol = [0,0.2,0]
-    return "pigment { color rgb <%f,%f,%f> } // %f"%(minCol[0] + fract*(maxCol[0] - minCol[0]),\
-                                                     minCol[1] + fract*(maxCol[1] - minCol[1]),\
-                                                     minCol[2] + fract*(maxCol[2] - minCol[2]), v)
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -1,15 +1,8 @@
-# -*- coding: utf-8 -*-
 #
-#   A file for converting NeuroML Level 3 files (including cells & network structure)
+#   A file for converting NeuroML files (including cells & network structure)
 #   into POVRay files for 3D rendering
 #
-#   A work in progress...
-#   TODO:
-#
-#      Convert to using SAX, not minidom (better for large networks)
-
-#
-#   Author: Padraig Gleeson
+#   Author: Padraig Gleeson & Matteo Farinella
 #
 #   This file has been developed as part of the neuroConstruct project
 #   This work has been funded by the Medical Research Council and Wellcome Trust
@@ -17,6 +10,7 @@
 #
  
 import sys
+import os
 import random
 from xml.dom import minidom  
 
@@ -28,9 +22,9 @@ FRAMES = 360
 USE_PLANE = False
 BACKGROUND = _WHITE
 
-LOCATION_X_SCALE = 3
+LOCATION_X_SCALE = 1
 LOCATION_Y_SCALE = 1.5
-LOCATION_Z_SCALE = 3
+LOCATION_Z_SCALE = 1
 
 
 # Needed for usage information
@@ -39,7 +33,7 @@ myFileName = 'NeuroML2POVRay.py'
 def usage_info():
 
     print "Usage: \n\n"+  \
-              "      python "+myFileName+" neuromlFile [-s] [-m]\n"
+              "      python "+myFileName+" neuromlFile [-split]\n"
 
 
 def main (args):
@@ -193,6 +187,8 @@ light_source {
             cells_file.write("    %s {\n"%shape)
             cells_file.write("        %s\n"%distalpoint)
             if len(proximalpoint): cells_file.write("        %s\n"%proximalpoint)
+
+            cells_file.write("        //%s_%s.%s\n"%('CGnRT','0', id))
             cells_file.write("    }\n")
 
         cells_file.write("    pigment { color rgb <%f,%f,%f> }\n"%(random.random(),random.random(),random.random()))
@@ -311,7 +307,7 @@ light_source {
 
     lookAt = "<%f,%f, %f>"%(midX,midY,midZ)
     loc = "<%f,%f, %f>"%(minX-lenX/4,maxY,minZ-lenZ/4)
-    
+
     plane = '''
 plane {
    y, vv(-1)
@@ -343,7 +339,7 @@ plane {
 
 // Trying to view box
 camera {
-  location < uu(%s * sin (clock * 2 * 3.141)) , vv(%s * sin (clock * 2 * 3.141)) , ww(%s * cos (clock * 2 * 3.141)) >
+  location < uu(%s * sin (clock * 0.5 * 3.141)) , vv(%s * sin (clock * 0.5 * 3.141)) , ww(%s * cos (clock * 0.5 * 3.141)) >
   look_at < uu(0) , vv(0.05+0.3*sin (clock * 2 * 3.141)) , ww(0)>
   //location < uu(0) , vv(-0.2) , ww(8) >
   //look_at <uu(0),vv(0),ww(0)>
@@ -354,17 +350,17 @@ camera {
 
 
     pov_file.write(footer)
-    
+
     pov_file.close()
-    
+
     if len(args)==3 and args[2] == '-m':
         ini_file_name = pov_file_name.replace(".pov", "_movie.ini")
-        
+    
         ini_movie = '''
 Antialias=On
 
 +W800 +H600 
-
+        
 Antialias_Threshold=0.3
 Antialias_Depth=4
 
