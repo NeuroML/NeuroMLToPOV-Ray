@@ -1,0 +1,4 @@
+Input_45:
+SingleElectricalInput: [Input: IClamp, cellGroup: CGnRT, cellNumber: 0, segmentId: 0, fractionAlong: 0.5]
+Input_45a:
+SingleElectricalInput: [Input: IClamp, cellGroup: CGnRT, cellNumber: 0, segmentId: 0, fractionAlong: 0.5]

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>This is a summary of the simulation parameters to assist reviewing of saved simulations in neuroConstruct.</comment>
+<entry key="Simulation temp">6.3</entry>
+<entry key="Duration">100.0</entry>
+<entry key="Unit system">NEURON Units</entry>
+<entry key="Script format">Hoc</entry>
+<entry key="neuroConstruct random seed">2032969571</entry>
+<entry key="NEURON random seed">1255792848</entry>
+<entry key="Stimulation: 50">IClamp: [del: 20, dur: 250, amp: 0, repeats: false] on CGnRT</entry>
+<entry key="NEURON extra hoc, Type 10.0">//forall print secname(), ": ", cai 
+ 
+ 
+ 
+print "Version info: ", nrnversion() 
+ 
+objref strFuncs 
+strFuncs = new StringFunctions() 
+ 
+if(strFuncs.substr(nrnversion(), "VERSION 7") &gt;=0 || strFuncs.substr(nrnversion(), "Release 7") &gt;=0) { 
+    print "*******************" 
+    print "***  NOTE: These cell models have only been tested so far on NEURON version 6.2!" 
+    print "*******************" 
+} 
+</entry>
+<entry key="Sim Config">Cell14-nRT-FigA8-00 (CGnRT, Input_45, Input_45a, CGnRT_v)</entry>
+<entry key="Net connections"/>
+<entry key="Parallel configuration">Local machine, serial mode with 1 host, 1 processor
+</entry>
+<entry key="Morph summary nRT">Segs:118_Secs:59_IntDivs:1078</entry>
+<entry key="Populations">CGnRT (nRT): 1; </entry>
+<entry key="NEURON extra hoc, Type 1.0"> 
+ 
+// Just left in for testing purposes. [Ca2+] is initialised to rest_conc of cell mechanism cad (=0) anyway... 
+ 
+forall if (ismembrane("ca_ion")) { 
+	//print "Changing eca in: ", secname() 
+	///eca = 125 
+	if (init_cai &gt; 0) { 
+	    //print "Changing cai in: ", secname() 
+	    cai = init_cai  // defined earlier 
+	} 
+    } 
+</entry>
+<entry key="Global Cm">1.0E-8</entry>
+<entry key="Script generation time">0.097</entry>
+<entry key="dt">0.05</entry>
+<entry key="neuroConstruct version">1.7.0</entry>
+<entry key="Global Rm">3.33333344E8</entry>
+<entry key="Cell Mechanisms on nRT">[ar (2.5E-10) on: [soma_dends], cad (-1.0) on: [OneSecGrp_SectionRef_1], cad (-1.0) on: [ModelViewParmSubset_3], cal (5.0E-9) on: [soma_dends], cat_a (2.0E-8) on: [ModelViewParmSubset_5], cat_a (5.0E-10) on: [ModelViewParmSubset_4], k2 (5.0E-9) on: [all], ka (1.0E-8) on: [ModelViewParmSubset_6], ka (5.0E-8) on: [ModelViewParmSubset_4], kahp_slower (1.0E-9) on: [soma_dends], kc (1.0E-7) on: [soma_dends], kdr_fs (1.0E-7) on: [ModelViewParmSubset_5], kdr_fs (4.0E-6) on: [axon_group], kdr_fs (6.0E-7) on: [ModelViewParmSubset_4], km (5.0E-9) on: [soma_dends], naf2 (-1.0) on: [all], naf2 (1.0E-7) on: [ModelViewParmSubset_5], naf2 (4.0E-6) on: [axon_group], naf2 (6.0E-7) on: [ModelViewParmSubset_4], napf (-1.0) on: [soma_dends], napf (1.0E-9) on: [ModelViewParmSubset_5], napf (6.0E-9) on: [ModelViewParmSubset_4], pas (-1.0) on: [all], pas (1.0E-8) on: [axon_group], pas (5.0E-10) on: [soma_dends], Syn_AMPA_L6NT_nRT on: [proximal_dends], Syn_AMPA_TCR_nRT on: [proximal_dends], Syn_Elect_nRT_nRT on: [dendrite_group], Syn_GABAA_nRT_nRT_s on: [distal_axon, soma_dends], Syn_GABAA_nRT_TCR_s on: [distal_axon], Syn_NMDA_L6NT_nRT on: [proximal_dends], Syn_NMDA_TCR_nRT on: [proximal_dends]]</entry>
+<entry key="Simulator">NEURON</entry>
+<entry key="GUI Mode">ALL_SHOW</entry>
+<entry key="Global Ra">300.0</entry>
+<entry key="Num integration method">Fixed time step</entry>
+<entry key="NEURON extra hoc, Type 0.0"> 
+// Just left in for testing purposes. [Ca2+] is initialised to rest_conc of cell mechanism cad (=0) anyway... 
+ 
+init_cai = 00 
+ 
+forall if (ismembrane("ca_ion")) { 
+    if (init_cai &gt; 0) { 
+        print "Changing initial cai in: ", secname(), " to ", init_cai," before INITIAL calls, so correct val of cai is used there..." 
+        cai = init_cai 
+    } 
+} 
+</entry>
+<entry key="Stimulation: 29">IClamp: [del: 0, dur: 10, amp: -0.4, repeats: false] on CGnRT</entry>
+</properties>
