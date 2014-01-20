@@ -14,35 +14,73 @@ import os
 import random
 from xml.dom import minidom  
 
+import argparse
+
 _WHITE = "<1,1,1,0.55>"
 _BLACK = "<0,0,0,0.55>"
 _GREY = "<0.85,0.85,0.85,0.55>"
 
-FRAMES = 360
-USE_PLANE = False
-BACKGROUND = _WHITE
 
-LOCATION_X_SCALE = 1
-LOCATION_Y_SCALE = 1.5
-LOCATION_Z_SCALE = 1
+def process_args():
+    """ 
+    Parse command-line arguments.
+    """
+    parser = argparse.ArgumentParser(description="A file for converting NeuroML files into POVRay files for 3D rendering")
 
-
-# Needed for usage information
-myFileName = 'NeuroML2POVRay.py'
-
-def usage_info():
-
-    print "Usage: \n\n"+  \
-              "      python "+myFileName+" neuromlFile [-split]\n"
+    parser.add_argument('neuroml_file', type=str, metavar='<NeuroML file>', 
+                        help='NeuroML (version 1.8.1) file to be converted to PovRay format')
+                        
+    parser.add_argument('-split',
+                        action='store_true',
+                        default=False,
+                        help="If this is specified, generate separate pov files for cells & network. Default is false")
 
 
-def main (args):
-      
-    if len(args) == 1:
-        usage_info()
-        exit()
+    parser.add_argument('-background', 
+                        type=str,
+                        metavar='<background colour>',
+                        default=_WHITE,
+                        help='Colour of background, e.g. <0,0,0,0.55>')
+
+    parser.add_argument('-movie',
+                        action='store_true',
+                        default=False,
+                        help="If this is specified, generate a ini file for generating a sequence of frames for a movie of the 3D structure")
+
+    parser.add_argument('-frames', 
+                        type=int,
+                        metavar='<frames>',
+                        default=36,
+                        help='Number of frames in movie')
+
+    parser.add_argument('-scalex', 
+                        type=float,
+                        metavar='<scale position x>',
+                        default=1,
+                        help='Scale position from network in x dir')
+    parser.add_argument('-scaley', 
+                        type=float,
+                        metavar='<scale position y>',
+                        default=1.5,
+                        help='Scale position from network in y dir')
+    parser.add_argument('-scalez', 
+                        type=float,
+                        metavar='<scale position z>',
+                        default=1,
+                        help='Scale position from network in z dir')
+
+    parser.add_argument('-plane',
+                        action='store_true',
+                        default=False,
+                        help="If this is specified, add a 2D plane below cell/network")
+    
+    return parser.parse_args()
+
+def main (argv):
+
+    args = process_args()
         
-    xmlfile = args[1]
+    xmlfile = args.neuroml_file
 
     pov_file_name = xmlfile.replace(".xml", ".pov").replace(".nml1", ".pov").replace(".nml", ".pov")
 
@@ -81,7 +119,7 @@ light_source {
     \n''' ###    end of header
 
 
-    pov_file.write(header%(BACKGROUND))
+    pov_file.write(header%(args.background))
 
     cells_file = pov_file
     net_file = pov_file
@@ -90,7 +128,7 @@ light_source {
     cf = pov_file_name.replace(".pov", "_cells.inc")
     nf = pov_file_name.replace(".pov", "_net.inc")
 
-    if len(args)>2:
+    if args.split:
         splitOut = True
         cells_file = open(cf, "w")
         net_file = open(nf, "w")
@@ -339,21 +377,22 @@ plane {
 
 // Trying to view box
 camera {
-  location < uu(%s * sin (clock * 0.5 * 3.141)) , vv(%s * sin (clock * 0.5 * 3.141)) , ww(%s * cos (clock * 0.5 * 3.141)) >
+  location < uu(%s * sin (clock * 2 * 3.141)) , vv(%s * sin (clock * 2 * 3.141)) , ww(%s * cos (clock * 2 * 3.141)) >
   look_at < uu(0) , vv(0.05+0.3*sin (clock * 2 * 3.141)) , ww(0)>
+
   //location < uu(0) , vv(-0.2) , ww(8) >
   //look_at <uu(0),vv(0),ww(0)>
 }
 
 %s
-    \n'''%(minX,minY,minZ,maxX,maxY,maxZ, LOCATION_X_SCALE, LOCATION_Y_SCALE, LOCATION_Z_SCALE, (plane if USE_PLANE else "")) ###    end of footer
+    \n'''%(minX,minY,minZ,maxX,maxY,maxZ, args.scalex, args.scaley, args.scalez, (plane if args.plane else "")) ###    end of footer
 
 
     pov_file.write(footer)
 
     pov_file.close()
 
-    if len(args)==3 and args[2] == '-m':
+    if args.movie:
         ini_file_name = pov_file_name.replace(".pov", "_movie.ini")
     
         ini_movie = '''
@@ -376,10 +415,10 @@ Pause_when_Done=off
         
         '''
         ini_file = open(ini_file_name, 'w')
-        ini_file.write(ini_movie%(pov_file_name, FRAMES))
+        ini_file.write(ini_movie%(pov_file_name, args.frames))
         ini_file.close()
         
-        print("Created file for generating %i movie FRAMES at: %s"%(FRAMES,ini_file_name))
+        print("Created file for generating %i movie frames at: %s"%(args.frames,ini_file_name))
 
 
 if __name__ == '__main__':
