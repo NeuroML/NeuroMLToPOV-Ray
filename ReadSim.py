@@ -12,24 +12,47 @@ import os.path
 
 import sys
 import os
+import argparse
 
 maxTime = 100
 skip = 50
 
-maxV = 50.0
-minV = -90.0
 
 povArgs = "-D Antialias=On Antialias_Threshold=0.3 Antialias_Depth=4"
 
-def main (args):
+def process_args():
+    """ 
+    Parse command-line arguments.
+    """
+    parser = argparse.ArgumentParser(description="A file for overlaying POVRay files generated from NeuroML by NeuroML2POVRay.py with cell activity (e.g. as generated from a neuroConstruct simulation)")
+
+    parser.add_argument('prefix', type=str, metavar='<network prefix>', 
+                        help='Prefix for files in PovRay, e.g. use PREFIX is files are PREFIX.pov, PREFIX_net.inc, etc.')
+                        
+
+    parser.add_argument('-maxV', 
+                        type=float,
+                        metavar='<maxV>',
+                        default=50.0,
+                        help='Max voltage for colour scale')
+
+    parser.add_argument('-minV', 
+                        type=float,
+                        metavar='<minV>',
+                        default=-90.0,
+                        help='Min voltage for colour scale')
+
+    return parser.parse_args()
+
+def main (argv):
+
+    args = process_args()
 
     ## Open the time.dat file & get time points
 
     time_file = open("time.dat", 'r')
 
     times = []
-
-    prefix = args[1]
 
     for line in time_file:
         if len(line.strip()) > 0 :
@@ -64,7 +87,7 @@ def main (args):
             line = file.readline()
             #print "line: [%s]"%line
             #print "Saving time %f"%(t)
-            volt.append(getColorForVolts(float(line)))
+            volt.append(getColorForVolts(float(line), args))
             for i in range(skip-1):
                 line = file.readline()
                 t=t+dt
@@ -76,16 +99,16 @@ def main (args):
     t=0
     index = 0
 
-    bat_file_name = "%s_pov.bat"%(prefix)
+    bat_file_name = "%s_pov.bat"%(args.prefix)
     bat_file = open(bat_file_name, 'w')
 
-    sh_file_name = "%s_pov.sh"%(prefix)
+    sh_file_name = "%s_pov.sh"%(args.prefix)
     sh_file = open(sh_file_name, 'w')
     
     while t<=maxTime:
         print "\n----  Exporting for time: %f  ----\n"%t
-        in_file = open(prefix+"_net.inc")
-        out_file_name = prefix+"_net.inc"+str(index)
+        in_file = open(args.prefix+"_net.inc")
+        out_file_name = args.prefix+"_net.inc"+str(index)
         out_file = open(out_file_name, 'w')
         
         for line in in_file:
@@ -105,16 +128,16 @@ def main (args):
         out_file.close()
         print "Written file: %s for time: %f"%(out_file_name, t)
         
-        in_file = open(prefix+".pov")
-        out_file_name = "%s_T%i.pov"%(prefix, index)
+        in_file = open(args.prefix+".pov")
+        out_file_name = "%s_T%i.pov"%(args.prefix, index)
         out_file = open(out_file_name, 'w')
         
         
         clock = 0.5 * t/maxTime
 
-        pre = '%s_net.inc'%prefix
+        pre = '%s_net.inc'%args.prefix
         pre = pre.split('/')[-1]
-        post = '%s_net.inc%i'%(prefix,index)
+        post = '%s_net.inc%i'%(args.prefix,index)
         post = post.split('/')[-1]
 
         print "Swapping %s for %s"%(pre, post)
@@ -130,7 +153,6 @@ def main (args):
         out_file.close()
 
         toEx = os.path.realpath(out_file_name)
-        #print toEx
 
         bat_file.write("C:\\Users\\Padraig\\AppData\\Local\\Programs\\POV-Ray\\v3.7\\bin\\pvengine.exe %s /nr /exit\n"%toEx)
         sh_file.write("povray %s %s\n"%(povArgs,toEx) )
@@ -144,12 +166,10 @@ def main (args):
 
 
     print "All populations: "+str(populations)
-    #print "All refs: "+str(volts.keys())
-    #print volts["GranuleCells_69"]
 
-def getColorForVolts(v):
+def getColorForVolts(v, args):
 
-    fract = (v - minV)/(maxV - minV)
+    fract = (v - args.minV)/(args.maxV - args.minV)
     if fract<0: fract = 0
     if fract>1: fract = 1
     maxCol = [1,1,0]
@@ -159,9 +179,9 @@ def getColorForVolts(v):
                                                      minCol[2] + fract*(maxCol[2] - minCol[2]), v)
 
 
-def getRainbowColorForVolts(v):
+def getRainbowColorForVolts(v, args):
 
-    fract = (v - minV)/(maxV - minV)
+    fract = (v - args.minV)/(args.maxV - args.minV)
     if fract<0: fract = 0.0
     if fract>1: fract = 1.0
     #maxCol = [0.6,1,1]
