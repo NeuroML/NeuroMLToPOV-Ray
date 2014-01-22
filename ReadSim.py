@@ -15,7 +15,6 @@ import os
 import argparse
 
 
-
 povArgs = "-D Antialias=On Antialias_Threshold=0.3 Antialias_Depth=4"
 
 def process_args():
@@ -46,6 +45,12 @@ def process_args():
                         default=100,
                         help='Max time to display until in ms')
 
+    parser.add_argument('-rotations', 
+                        type=float,
+                        metavar='<rotations>',
+                        default=0.5,
+                        help='Number of rotations to complete in movie')
+
     parser.add_argument('-skip', 
                         type=int,
                         metavar='<skip>',
@@ -56,6 +61,11 @@ def process_args():
                         action='store_true',
                         default=False,
                         help="If this is specified, visualise activity in a single cell, with dat files for each segment")
+
+    parser.add_argument('-rainbow',
+                        action='store_true',
+                        default=False,
+                        help="If this is specified, use a rainbow based colouring of the cell activity (still in development...)")
 
     return parser.parse_args()
 
@@ -102,7 +112,8 @@ def main (argv):
             line = file.readline()
             #print "line: [%s]"%line
             #print "Saving time %f"%(t)
-            volt.append(getRainbowColorForVolts(float(line), args))
+            colour = getRainbowColorForVolts(float(line), args) if args.rainbow else getColorForVolts(float(line), args)
+            volt.append(colour)
             for i in range(args.skip-1):
                 line = file.readline()
                 t=t+dt
@@ -155,7 +166,7 @@ def main (argv):
             out_file_name = "%s_T%i.pov"%(args.prefix, index)
             out_file = open(out_file_name, 'w')
 
-            clock = 0.5 * t/args.maxTime
+            clock = args.rotations * t/args.maxTime
 
             pre = '%s_net.inc'%args.prefix
             pre = pre.split('/')[-1]
@@ -215,7 +226,7 @@ def main (argv):
                 if line.find(pre)>=0:
                     out_file.write(line.replace(pre,post))
                 else:
-                    clock = 0.1 * t/args.maxTime
+                    clock = args.rotations * t/args.maxTime
                     out_file.write(line.replace("clock", str(clock)))
 
             print "Written file: %s for time: %f"%(out_file_name, t)
@@ -239,7 +250,7 @@ def getColorForVolts(v, args):
     if fract<0: fract = 0
     if fract>1: fract = 1
     maxCol = [1,1,0]
-    minCol = [0,0.6,0]
+    minCol = [0,0.3,0]
     return "pigment { color rgb <%f,%f,%f> } // v = %f"%(minCol[0] + fract*(maxCol[0] - minCol[0]),\
                                                      minCol[1] + fract*(maxCol[1] - minCol[1]),\
                                                      minCol[2] + fract*(maxCol[2] - minCol[2]), v)

@@ -1,7 +1,20 @@
 #!/bin/bash
-rm -rf *.png
-rm -rf *.pov*
-rm -rf *.inc*
+
+### Cleanup
+
+./clean.sh
+
+
+### Generate a single POVRay file from NeuroML & use povray to generate PNG from this
+
+python NeuroML2POVRay.py BigCerebellum.nml
+
+povray Antialias=On BigCerebellum.pov
+
+B_PNG=BigCerebellum.png
+
+
+### Generate POVRay files (split between cells & network) from NeuroML & use povray to generate PNG from these
 
 python NeuroML2POVRay.py BigCerebellum.nml -split
 
@@ -10,12 +23,8 @@ povray Antialias=On BigCerebellum_s.pov
 
 B_PNG_S=BigCerebellum_s.png
 
-python NeuroML2POVRay.py BigCerebellum.nml
 
-povray Antialias=On BigCerebellum.pov
-
-B_PNG_S=BigCerebellum.png
-
+### Check images have been generated
 
 if [ -s $B_PNG ] && [ -s $B_PNG_S ]; then
     echo "--------------------------"

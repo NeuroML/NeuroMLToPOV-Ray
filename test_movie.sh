@@ -1,3 +1,8 @@
 #!/bin/bash
-python NeuroML2POVRay.py  -movie -frames 72  -scalex 2 -scalez 2 BigCerebellum.nml
+
+### Generate a PovRay ini file to generate a movie with 36 frames
+python NeuroML2POVRay.py  -movie -frames 36  -scalex 2 -scalez 2 BigCerebellum.nml
+
+
+### Generate the movie using povray
 povray BigCerebellum_movie.ini
