@@ -226,7 +226,7 @@ light_source {
             cells_file.write("        %s\n"%distalpoint)
             if len(proximalpoint): cells_file.write("        %s\n"%proximalpoint)
 
-            cells_file.write("        //%s_%s.%s\n"%('CGnRT','0', id))
+            cells_file.write("        //%s_%s.%s\n"%('CELL_GROUP_NAME','0', id))
             cells_file.write("    }\n")
 
         cells_file.write("    pigment { color rgb <%f,%f,%f> }\n"%(random.random(),random.random(),random.random()))

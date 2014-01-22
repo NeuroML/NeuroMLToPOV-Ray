@@ -8,7 +8,7 @@ python ../NeuroML2POVRay.py MyCellNet.nml1 -split -scalex 2 -scalez 1.2  -backgr
 
 
 ### Read in simulation as used in MyNetwork.nml1 & generate new povray files for each frame, coloured with cell segment activity
-python ../ReadSim.py MyCellNet -singlecell -skip 10 -maxTime 100 -maxV 40 -minV -90 -rotations 0.5
+python ../ReadSim.py MyCellNet -singlecell CGnRT_0 -skip 20 -maxTime 100 -maxV 40 -minV -90 -rotations 0.5 -rainbow
 
 
 ### Execute bash script to run povray on each frame file

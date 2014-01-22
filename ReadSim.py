@@ -23,7 +23,9 @@ def process_args():
     """
     parser = argparse.ArgumentParser(description="A file for overlaying POVRay files generated from NeuroML by NeuroML2POVRay.py with cell activity (e.g. as generated from a neuroConstruct simulation)")
 
-    parser.add_argument('prefix', type=str, metavar='<network prefix>', 
+    parser.add_argument('prefix', 
+                        type=str, 
+                        metavar='<network prefix>', 
                         help='Prefix for files in PovRay, e.g. use PREFIX is files are PREFIX.pov, PREFIX_net.inc, etc.')
                         
 
@@ -58,9 +60,10 @@ def process_args():
                         help='Number of time points to skip before generating the next frame')
 
     parser.add_argument('-singlecell',
-                        action='store_true',
-                        default=False,
-                        help="If this is specified, visualise activity in a single cell, with dat files for each segment")
+                        type=str, 
+                        metavar='<reference_n>', 
+                        default='???',
+                        help="If this is specified, visualise activity in a single cell; dat files for each segment should be present: reference_n.0.dat, reference_n.1.dat, etc.")
 
     parser.add_argument('-rainbow',
                         action='store_true',
@@ -197,15 +200,17 @@ def main (argv):
             in_file = open(args.prefix+"_cells.inc")
             out_file_name = args.prefix+"_cells.inc"+ind+str(index)
             out_file = open(out_file_name, 'w')
+            dummy_ref = 'CELL_GROUP_NAME_0'
 
             for line in in_file:
                 if line.strip().startswith("//"):
                     ref = line.strip()[2:]
+                    ref = ref.replace(dummy_ref, args.singlecell)
                     if volts.has_key(ref):
                         vs = volts[ref]
-                        out_file.write("         "+vs[index]+"//"+ref+" t= "+ind+str(t)+"\n")
+                        out_file.write("         "+vs[index]+"\n//"+ref+" t= "+ind+str(t)+"\n")
                     else:
-                        out_file.write("//No ref: "+ref+"\n")
+                        out_file.write("//No ref found: "+ref+", was looking for "+dummy_ref+"\n")
 
 
                 else:
