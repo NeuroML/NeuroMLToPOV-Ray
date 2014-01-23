@@ -10,7 +10,6 @@
 #
  
 import sys
-import os
 import random
 from xml.dom import minidom  
 
@@ -334,17 +333,6 @@ light_source {
 
             net_file.write("}\n")
 
-
-    lenX = (maxX-minX)
-    lenY = (maxY-minY)
-    lenZ = (maxZ-minZ)
-
-    midX = minX + lenX/2
-    midY = minY + lenY/2
-    midZ = minZ + lenZ/2
-
-    lookAt = "<%f,%f, %f>"%(midX,midY,midZ)
-    loc = "<%f,%f, %f>"%(minX-lenX/4,maxY,minZ-lenZ/4)
 
     plane = '''
 plane {

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os.path
 #
-#   A simple file for reading nC sims
+#   A simple file for overlaying neuroConstruct recorded simulations on PovRay files
 #
 #   Author: Padraig Gleeson & Matteo Farinella
 #
@@ -41,11 +41,17 @@ def process_args():
                         default=-90.0,
                         help='Min voltage for colour scale in mV')
 
-    parser.add_argument('-maxTime', 
+    parser.add_argument('-startTime', 
                         type=float,
-                        metavar='<maxTime>',
+                        metavar='<startTime>',
+                        default=0,
+                        help='Time in ms at which to start overlaying the simulation activity')
+                        
+    parser.add_argument('-endTime', 
+                        type=float,
+                        metavar='<endTime>',
                         default=100,
-                        help='Max time to display until in ms')
+                        help='End time of simulation activity in ms')
 
     parser.add_argument('-rotations', 
                         type=float,
@@ -62,7 +68,7 @@ def process_args():
     parser.add_argument('-singlecell',
                         type=str, 
                         metavar='<reference_n>', 
-                        default='???',
+                        default=None,
                         help="If this is specified, visualise activity in a single cell; dat files for each segment should be present: reference_n.0.dat, reference_n.1.dat, etc.")
 
     parser.add_argument('-rainbow',
@@ -111,22 +117,22 @@ def main (argv):
         volt = []
         t=0.0
         
-        while t<=args.maxTime:
+        
+        while t<=args.endTime:
             line = file.readline()
-            #print "line: [%s]"%line
-            #print "Saving time %f"%(t)
-            colour = getRainbowColorForVolts(float(line), args) if args.rainbow else getColorForVolts(float(line), args)
-            volt.append(colour)
-            for i in range(args.skip-1):
-                line = file.readline()
-                t=t+dt
+            if t>=args.startTime:
+                colour = get_rainbow_color_for_volts(float(line), args) if args.rainbow else get_color_for_volts(float(line), args)
+                volt.append(colour)
+                for i in range(args.skip-1):
+                    line = file.readline()
+                    t=t+dt
             t=t+dt
 
         volts[cell_ref] = volt
         print "Saved data for cell ref %s"%cell_ref
 
 
-    t=0
+    t=args.startTime
     index = 0
 
     #give the single frames an alphabetical order
@@ -139,8 +145,8 @@ def main (argv):
     sh_file_name = "%s_pov.sh"%(args.prefix)
     sh_file = open(sh_file_name, 'w')
     
-    while t<=args.maxTime:
-        print "\n----  Exporting for time: %f  ----\n"%t
+    while t<=args.endTime:
+        print "\n----  Exporting for time: %f, index %i  ----\n"%(t, index)
 
         if not args.singlecell:
 
@@ -155,7 +161,7 @@ def main (argv):
                         vs = volts[ref]
                         out_file.write("         "+vs[index]+"//"+ref+" t= "+str(t)+"\n")
                     else:
-                        out_file.write("No ref: "+ref+"\n")
+                        out_file.write("No ref there: "+ref+"\n")
 
 
                 else:
@@ -169,7 +175,7 @@ def main (argv):
             out_file_name = "%s_T%i.pov"%(args.prefix, index)
             out_file = open(out_file_name, 'w')
 
-            clock = args.rotations * t/args.maxTime
+            clock = args.rotations * (t-args.startTime)/(args.endTime-args.startTime)
 
             pre = '%s_net.inc'%args.prefix
             pre = pre.split('/')[-1]
@@ -231,7 +237,7 @@ def main (argv):
                 if line.find(pre)>=0:
                     out_file.write(line.replace(pre,post))
                 else:
-                    clock = args.rotations * t/args.maxTime
+                    clock = args.rotations * (t-args.startTime)/(args.endTime-args.startTime)
                     out_file.write(line.replace("clock", str(clock)))
 
             print "Written file: %s for time: %f"%(out_file_name, t)
@@ -249,7 +255,7 @@ def main (argv):
 
     print "All populations: "+str(populations)
 
-def getColorForVolts(v, args):
+def get_color_for_volts(v, args):
 
     fract = (v - args.minV)/(args.maxV - args.minV)
     if fract<0: fract = 0
@@ -261,7 +267,7 @@ def getColorForVolts(v, args):
                                                      minCol[2] + fract*(maxCol[2] - minCol[2]), v)
 
 
-def getRainbowColorForVolts(v, args):
+def get_rainbow_color_for_volts(v, args):
 
     fract = (v - args.minV)/(args.maxV - args.minV)
     if fract<0: fract = 0.0
