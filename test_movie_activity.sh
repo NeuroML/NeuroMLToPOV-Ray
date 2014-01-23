@@ -8,7 +8,7 @@ python ../NeuroML2POVRay.py -split -scalex 3 -scalez 3  -background "<0,0,0,0.55
 
 
 ### Read in simulation as used in MyNetwork.nml1 & generate new POVRay files for each frame, coloured with cell activity
-python ../OverlaySimulation.py MyNetwork -maxV 40 -minV -70 -rotations 1
+python ../OverlaySimulation.py MyNetwork -skip 20 -maxV 40 -minV -70 -rotations 1 
 
 
 ### Execute bash script to run povray on each frame file

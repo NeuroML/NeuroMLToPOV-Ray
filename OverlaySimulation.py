@@ -79,8 +79,9 @@ def process_args():
     return parser.parse_args()
 
 def main (argv):
-
+    
     args = process_args()
+    #for v in range(-90,60,5): print get_rainbow_color_for_volts(v, args)
 
     ## Open the time.dat file & get time points
 
@@ -272,11 +273,10 @@ def get_rainbow_color_for_volts(v, args):
     fract = (v - args.minV)/(args.maxV - args.minV)
     if fract<0: fract = 0.0
     if fract>1: fract = 1.0
-    #maxCol = [0.6,1,1]
-    #minCol = [0,1,1]
-    hue = 359 - (120 * (1.0-fract))
+    
+    hue = (270 * (1-fract))
     return "pigment { color CHSL2RGB(<%f,1,0.5>) } // v = %f, fract = %f"%( hue , v, fract)
-
+    
 if __name__ == '__main__':
     main(sys.argv)
 
