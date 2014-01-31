@@ -76,6 +76,12 @@ def process_args():
                         default=False,
                         help="If this is specified, use a rainbow based colouring of the cell activity (still in development...)")
 
+    parser.add_argument('-povrayOptions',
+                        type=str, 
+                        metavar='<povrayOptions>', 
+                        default=povArgs,
+                        help="Set more specific arguments for the povray command.")
+
     return parser.parse_args()
 
 def main (argv):
@@ -198,7 +204,7 @@ def main (argv):
             toEx = os.path.realpath(out_file_name)
 
             bat_file.write("C:\\Users\\Padraig\\AppData\\Local\\Programs\\POV-Ray\\v3.7\\bin\\pvengine.exe %s /nr /exit\n"%toEx)
-            sh_file.write("povray %s %s\n"%(povArgs,toEx) )
+            sh_file.write("povray %s %s\n"%(args.povrayOptions,toEx) )
 
         else:
 
@@ -248,7 +254,7 @@ def main (argv):
             toEx = os.path.realpath(out_file_name)
 
             bat_file.write("C:\\Users\\Padraig\\AppData\\Local\\Programs\\POV-Ray\\v3.7\\bin\\pvengine.exe %s /nr /exit\n"%toEx)
-            sh_file.write("povray %s %s\n"%(povArgs,toEx) )
+            sh_file.write("povray %s %s\n"%(args.povrayOptions,toEx) )
 
         index=index+1
         t=t+stepTime
