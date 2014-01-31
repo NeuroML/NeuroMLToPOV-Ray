@@ -51,6 +51,38 @@ def process_args():
                         metavar='<frames>',
                         default=36,
                         help='Number of frames in movie')
+                        
+    parser.add_argument('-posx', 
+                        type=float,
+                        metavar='<position offset x>',
+                        default=0,
+                        help='Offset position in x dir (0 is centre, 1 is top)')
+    parser.add_argument('-posy', 
+                        type=float,
+                        metavar='<position offset y>',
+                        default=0,
+                        help='Offset position in y dir (0 is centre, 1 is top)')
+    parser.add_argument('-posz', 
+                        type=float,
+                        metavar='<position offset z>',
+                        default=0,
+                        help='Offset position in z dir (0 is centre, 1 is top)')
+                        
+    parser.add_argument('-viewx', 
+                        type=float,
+                        metavar='<view offset x>',
+                        default=0,
+                        help='Offset viewing point in x dir (0 is centre, 1 is top)')
+    parser.add_argument('-viewy', 
+                        type=float,
+                        metavar='<view offset y>',
+                        default=0,
+                        help='Offset viewing point in y dir (0 is centre, 1 is top)')
+    parser.add_argument('-viewz', 
+                        type=float,
+                        metavar='<view offset z>',
+                        default=0,
+                        help='Offset viewing point in z dir (0 is centre, 1 is top)')
 
     parser.add_argument('-scalex', 
                         type=float,
@@ -365,15 +397,12 @@ plane {
 
 // Trying to view box
 camera {
-  location < uu(%s * sin (clock * 2 * 3.141)) , vv(%s * sin (clock * 2 * 3.141)) , ww(%s * cos (clock * 2 * 3.141)) >
-  look_at < uu(0) , vv(0.05+0.3*sin (clock * 2 * 3.141)) , ww(0)>
-
-  //location < uu(0) , vv(-0.2) , ww(8) >
-  //look_at <uu(0),vv(0),ww(0)>
+  location < uu(%s + %s * sin (clock * 2 * 3.141)) , vv(%s + %s * sin (clock * 2 * 3.141)) , ww(%s + %s * cos (clock * 2 * 3.141)) >
+  look_at < uu(%s + 0) , vv(%s + 0.05+0.3*sin (clock * 2 * 3.141)) , ww(%s + 0)>
 }
 
 %s
-    \n'''%(minX,minY,minZ,maxX,maxY,maxZ, args.scalex, args.scaley, args.scalez, (plane if args.plane else "")) ###    end of footer
+    \n'''%(minX,minY,minZ,maxX,maxY,maxZ, args.posx, args.scalex, args.posy, args.scaley, args.posz, args.scalez, args.viewx, args.viewy, args.viewz, (plane if args.plane else "")) ###    end of footer
 
 
     pov_file.write(footer)

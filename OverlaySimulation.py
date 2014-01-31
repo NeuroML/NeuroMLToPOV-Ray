@@ -87,7 +87,8 @@ def process_args():
 def main (argv):
     
     args = process_args()
-    #for v in range(-90,60,5): print get_rainbow_color_for_volts(v, args)
+    #for v in range(int(args.minV),int(args.maxV)+5,5): print get_rainbow_color_for_volts(v, args)
+    #exit()
 
     ## Open the time.dat file & get time points
 

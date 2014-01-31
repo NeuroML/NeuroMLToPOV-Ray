@@ -15,12 +15,13 @@ import argparse
 import sys
 import os
 
-frames = 476
-#frames = 72
 
-width = 1600
-height = 1200
+width = 800
+height = 600
+scale_font = 1
 
+font = cv2.FONT_HERSHEY_PLAIN
+font_colour = (255,255,255)
 
 
 def process_args():
@@ -65,6 +66,24 @@ def process_args():
                         default='Movie generated from neuroConstruct simulation',
                         help='Title for movie')
                         
+    parser.add_argument('-left', 
+                        type=str, 
+                        metavar='<left info>', 
+                        default='',
+                        help='Text on left')
+                        
+    parser.add_argument('-frames', 
+                        type=int,
+                        metavar='<frames>',
+                        default=100,
+                        help='Number of frames')
+                        
+    parser.add_argument('-name', 
+                        type=str, 
+                        metavar='<Movie name>', 
+                        default='output',
+                        help='Movie name')
+                        
     return parser.parse_args()
 
 
@@ -73,13 +92,13 @@ def generate_volt_scale(img, x, y, height, width, num):
         ww = int(float(width)/num)
         xx = int(x + i * ww)
         fract = 1 - (float(i)/num + .5/num)
-        hue = (270 * (1-fract))/350
+        hue = (270 * (1-fract))/360
         rgb = colorsys.hls_to_rgb(hue, 0.5, 1)
-        rgb = tuple([int(255*rr) for rr in rgb])
+        rgb = tuple([int(256*rr) for rr in rgb])
         c1 = (xx,y)
         c2 = (xx+ww,y+height)
-        #print "%f - %f - %s - %s - %s"%(fract, hue, rgb, c1, c2)
-        cv2.rectangle(img,c1,c2,rgb,4)
+        #print "Fract: %f - hue: %f - RGB: %s - %s - %s"%(fract, hue, rgb, c1, c2)
+        cv2.rectangle(img,c1,c2,rgb,3)
         
     
 
@@ -103,7 +122,7 @@ def main (argv):
 
     if gen_images:
 
-        for i in range(frames+1):
+        for i in range(args.frames+1):
             index = str(i)
             while len(index)<3: index="0"+index
             img_files_pre.append("%s%s.png"%(pref,index))
@@ -119,16 +138,16 @@ def main (argv):
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
 
-            font = cv2.FONT_HERSHEY_PLAIN
-            t = args.startTime + i*float(args.endTime-args.startTime)/frames
-            font_colour = (255,255,255)
-            cv2.putText(img,'Time: %.3f ms'%t,(width-300,100), font, 2,font_colour,2)
-            cv2.putText(img,'%imV  :  %imV'%(args.minV, args.maxV),(300,100), font, 2,font_colour,2)
+            t = args.startTime + i*float(args.endTime-args.startTime)/args.frames
+            
+            cv2.putText(img,'Time: %.3f ms'%t,(width-150,50), font, 1,font_colour,scale_font)
+            cv2.putText(img,'%imV  :  %imV'%(args.minV, args.maxV),(100,50), font, 1,font_colour,scale_font)
 
-            cv2.putText(img,args.title,(300,height-100), font, 2,font_colour,2)
+            cv2.putText(img,args.title,(150,height-50), font, 1,font_colour,scale_font)
+            cv2.putText(img,args.left,(15,height/2), font, 1,font_colour,scale_font)
 
-            generate_volt_scale(img, 300, 130, 25, 300, 70)
-            new_file = 'm_'+img_file
+            generate_volt_scale(img, 100, 65, 12, 150, 70)
+            new_file = args.name+'_'+img_file
             cv2.imwrite(new_file,img)
             print("Written %s"%new_file)
 
@@ -136,10 +155,10 @@ def main (argv):
 
     if gen_movie:
 
-        for i in range(frames+1):
+        for i in range(args.frames+1):
             index = str(i)
             while len(index)<3: index="0"+index
-            img_files_post.append("m_%s%s.png"%(pref,index))
+            img_files_post.append("%s_%s%s.png"%(args.name,pref,index))
 
         imgs = []
 
@@ -156,15 +175,15 @@ def main (argv):
         fps = 24
         if format is 'avi':
             fourcc = cv.CV_FOURCC('X','V','I','D')
-            mov_file = 'output.avi'
+            mov_file = args.name+'.avi'
             out = cv2.VideoWriter(mov_file,fourcc, fps, (width,height))
         if format is 'divx':
             fourcc = cv.CV_FOURCC('D','I','V','X')
-            mov_file = 'output.avi'
+            mov_file = args.name+'.avi'
             out = cv2.VideoWriter(mov_file,fourcc, fps, (width,height))
         if format is 'mpg':
             fourcc = cv.CV_FOURCC('M','J','P','G')
-            mov_file = 'output.mpg'
+            mov_file = args.name+'.mpg'
             out = cv2.VideoWriter(mov_file,fourcc, fps, (width,height))
 
         f = 0
