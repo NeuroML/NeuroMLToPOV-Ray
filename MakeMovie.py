@@ -16,7 +16,7 @@ import sys
 import os
 
 frames = 476
-frames = 72
+#frames = 72
 
 width = 1600
 height = 1200
@@ -90,25 +90,29 @@ def main (argv):
     
     print("Making a movie....")
     
-    img_files = []
+    img_files_pre = []
+    img_files_post = []
 
-    gen_images = False
+    gen_images = True
+    gen_movie = False
+    
+    #gen_images = False
     gen_movie = True
     
     pref = args.prefix+'_T00' 
 
     if gen_images:
-        
 
         for i in range(frames+1):
             index = str(i)
             while len(index)<3: index="0"+index
-            img_files.append("%s%s.png"%(pref,index))
+            img_files_pre.append("%s%s.png"%(pref,index))
+            
 
-        for i in range(len(img_files)):
-            img_file = img_files[i]
+        for i in range(len(img_files_pre)):
+            img_file = img_files_pre[i]
             img = cv2.imread(img_file)
-            print("Read in %s"%img_file)
+            print("Read in file: %s"%img_file)
             show = False
             if show:
                 cv2.imshow('Image: '+img_file,img)
@@ -128,7 +132,6 @@ def main (argv):
             cv2.imwrite(new_file,img)
             print("Written %s"%new_file)
 
-            img_files = []
 
 
     if gen_movie:
@@ -136,12 +139,12 @@ def main (argv):
         for i in range(frames+1):
             index = str(i)
             while len(index)<3: index="0"+index
-            img_files.append("m_%s%s.png"%(pref,index))
+            img_files_post.append("m_%s%s.png"%(pref,index))
 
         imgs = []
 
-        for i in range(len(img_files)):
-            img_file = img_files[i]
+        for i in range(len(img_files_post)):
+            img_file = img_files_post[i]
             img = cv2.imread(img_file)
             print("Read in %s"%img_file)
             imgs.append(img)
