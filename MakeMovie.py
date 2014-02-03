@@ -13,14 +13,12 @@ import colorsys
 
 import argparse
 import sys
-import os
-
 
 width = 800
 height = 600
 scale_font = 1
 
-font = cv2.FONT_HERSHEY_PLAIN
+font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 font_colour = (255,255,255)
 
 
@@ -100,7 +98,6 @@ def generate_volt_scale(img, x, y, height, width, num):
         #print "Fract: %f - hue: %f - RGB: %s - %s - %s"%(fract, hue, rgb, c1, c2)
         cv2.rectangle(img,c1,c2,rgb,3)
         
-    
 
     
 def main (argv):
@@ -140,13 +137,13 @@ def main (argv):
 
             t = args.startTime + i*float(args.endTime-args.startTime)/args.frames
             
-            cv2.putText(img,'Time: %.3f ms'%t,(width-150,50), font, 1,font_colour,scale_font)
-            cv2.putText(img,'%imV  :  %imV'%(args.minV, args.maxV),(100,50), font, 1,font_colour,scale_font)
+            cv2.putText(img,'Time: %.3fms'%t,(width-220,50), font, 1,font_colour,scale_font)
+            cv2.putText(img,'%imV  :  >%imV'%(args.minV, args.maxV),(20,50), font, 1,font_colour,scale_font)
 
-            cv2.putText(img,args.title,(150,height-50), font, 1,font_colour,scale_font)
-            cv2.putText(img,args.left,(15,height/2), font, 1,font_colour,scale_font)
+            cv2.putText(img,args.title,(15,550), font, 1,font_colour,scale_font)
+            cv2.putText(img,args.left,(15,570), font, 1,font_colour,scale_font)
 
-            generate_volt_scale(img, 100, 65, 12, 150, 70)
+            generate_volt_scale(img, 20, 65, 12, 200, 50)
             new_file = args.name+'_'+img_file
             cv2.imwrite(new_file,img)
             print("Written %s"%new_file)
