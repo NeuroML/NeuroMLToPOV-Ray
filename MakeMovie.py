@@ -138,7 +138,7 @@ def main (argv):
             t = args.startTime + i*float(args.endTime-args.startTime)/args.frames
             
             cv2.putText(img,'Time: %.3fms'%t,(width-220,50), font, 1,font_colour,scale_font)
-            cv2.putText(img,'%imV  :  >%imV'%(args.minV, args.maxV),(20,50), font, 1,font_colour,scale_font)
+            cv2.putText(img,'%imV : %imV'%(args.minV, args.maxV),(20,50), font, 1,font_colour,scale_font)
 
             cv2.putText(img,args.title,(15,550), font, 1,font_colour,scale_font)
             cv2.putText(img,args.left,(15,570), font, 1,font_colour,scale_font)
