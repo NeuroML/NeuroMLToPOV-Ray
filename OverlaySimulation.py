@@ -21,7 +21,7 @@ def process_args():
     """ 
     Parse command-line arguments.
     """
-    parser = argparse.ArgumentParser(description="A file for overlaying POVRay files generated from NeuroML by NeuroML2POVRay.py with cell activity (e.g. as generated from a neuroConstruct simulation)")
+    parser = argparse.ArgumentParser(description="A file for overlaying POVRay files generated from NeuroML by NeuroML1ToPOVRay.py with cell activity (e.g. as generated from a neuroConstruct simulation)")
 
     parser.add_argument('prefix', 
                         type=str, 

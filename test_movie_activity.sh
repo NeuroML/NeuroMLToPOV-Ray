@@ -4,7 +4,7 @@ cd SimulationData
 
 
 ### Generate POVRay files (split between cells & network) from NeuroML
-python ../NeuroML2POVRay.py -split -scalex 3 -scalez 3  -background "<0,0,0,0.55>" MyNetwork.nml1
+python ../NeuroML1ToPOVRay.py -split -scalex 3 -scalez 3  -background "<0,0,0,0.55>" MyNetwork.nml1
 
 
 ### Read in simulation as used in MyNetwork.nml1 & generate new POVRay files for each frame, coloured with cell activity
