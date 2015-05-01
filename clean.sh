@@ -15,3 +15,10 @@ rm -rf SimulationDataCell/*.inc*
 rm -rf SimulationDataCell/*.png*
 rm -rf SimulationDataCell/*.sh
 rm -rf SimulationDataCell/*.bat
+
+rm -rf NeuroML2/*.pov*
+rm -rf NeuroML2/*.inc*
+rm -rf NeuroML2/*.png*
+rm -rf NeuroML2/*.sh
+rm -rf NeuroML2/*.bat
+rm -rf NeuroML2/*.ini

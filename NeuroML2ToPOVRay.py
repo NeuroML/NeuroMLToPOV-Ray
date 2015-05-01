@@ -11,15 +11,12 @@
  
 import sys
 import random
-from xml.dom import minidom  
 
 import argparse
 
-import neuroml
 import neuroml.loaders as loaders
 
 import os
-import shutil
 
 _WHITE = "<1,1,1,0.55>"
 _BLACK = "<0,0,0,0.55>"
@@ -169,13 +166,13 @@ light_source {
         splitOut = True
         cells_file = open(cf, "w")
         net_file = open(nf, "w")
-        print "Saving into %s and %s and %s"%(pov_file_name, cf, nf)
+        print("Saving into %s and %s and %s"%(pov_file_name, cf, nf))
 
-    print "Converting XML file: %s to %s"%(xmlfile, pov_file_name)
+    print("Converting XML file: %s to %s"%(xmlfile, pov_file_name))
 
 
     nml_doc = loaders.NeuroMLLoader.load(xmlfile)
-    root_dir = os.path.dirname(xmlfile)
+    root_dir = os.path.abspath(os.path.dirname(xmlfile))
 
     cell_elements = []
     cell_elements.extend(nml_doc.cells)
@@ -202,12 +199,12 @@ light_source {
 
     declaredcells = {}
 
-    print "There are %i cells in the file"%len(cell_elements)
+    print("There are %i cells in the file"%len(cell_elements))
 
     for cell in cell_elements:
-        #print dir(cell)
+        
         cellName = cell.id
-        print "Handling cell: %s"%cellName
+        print("Handling cell: %s"%cellName)
 
         
         declaredcell = "cell_"+cellName
@@ -280,7 +277,7 @@ light_source {
 
     popElements = nml_doc.networks[0].populations
 
-    print "There are %i populations in the file"%len(popElements)
+    print("There are %i populations in the file"%len(popElements))
 
     for pop in popElements:
 
@@ -289,7 +286,7 @@ light_source {
         instances = pop.instances
 
         info = "Population: %s has %i cells of type: %s"%(name,len(instances),celltype)
-        print info
+        print(info)
 
         colour = "1"
         '''
