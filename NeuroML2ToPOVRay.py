@@ -1,5 +1,5 @@
 #
-#   A file for converting NeuroML files (including cells & network structure)
+#   A file for converting NeuroML 1 files (including cells & network structure)
 #   into POVRay files for 3D rendering
 #
 #   Author: Padraig Gleeson & Matteo Farinella
@@ -15,6 +15,12 @@ from xml.dom import minidom
 
 import argparse
 
+import neuroml
+import neuroml.loaders as loaders
+
+import os
+import shutil
+
 _WHITE = "<1,1,1,0.55>"
 _BLACK = "<0,0,0,0.55>"
 _GREY = "<0.85,0.85,0.85,0.55>"
@@ -24,10 +30,10 @@ def process_args():
     """ 
     Parse command-line arguments.
     """
-    parser = argparse.ArgumentParser(description="A file for converting NeuroML version 1.8.1 files into POVRay files for 3D rendering")
+    parser = argparse.ArgumentParser(description="A file for converting NeuroML v2 files into POVRay files for 3D rendering")
 
     parser.add_argument('neuroml_file', type=str, metavar='<NeuroML file>', 
-                        help='NeuroML (version 1.8.1) file to be converted to PovRay format')
+                        help='NeuroML (version 2 beta 3+) file to be converted to PovRay format')
                         
     parser.add_argument('-split',
                         action='store_true',
@@ -167,15 +173,19 @@ light_source {
 
     print "Converting XML file: %s to %s"%(xmlfile, pov_file_name)
 
-    xmldoc = minidom.parse(xmlfile)
 
+    nml_doc = loaders.NeuroMLLoader.load(xmlfile)
+    root_dir = os.path.dirname(xmlfile)
+
+    cell_elements = []
+    cell_elements.extend(nml_doc.cells)
     
-    neuroml = xmldoc.getElementsByTagName('neuroml')[0]
-
-    cellsElement = neuroml.getElementsByTagName('cells')[0]
+    for include in nml_doc.includes:
+        inc_file = include.href
+        inc_doc = loaders.NeuroMLLoader.load(root_dir+"/"+inc_file)
+        cell_elements.extend(inc_doc.cells)
+        
     
-    cellElements = cellsElement.getElementsByTagName('cell')
-
     minXc = 1e9
     minYc = 1e9
     minZc = 1e9
@@ -192,11 +202,11 @@ light_source {
 
     declaredcells = {}
 
-    print "There are %i cells in the file"%len(cellElements)
+    print "There are %i cells in the file"%len(cell_elements)
 
-    for cell in cellElements:
+    for cell in cell_elements:
         #print dir(cell)
-        cellName = cell.getAttribute('name')
+        cellName = cell.id
         print "Handling cell: %s"%cellName
 
         
@@ -208,23 +218,22 @@ light_source {
         cells_file.write("union {\n")
 
         prefix = ""
-        if len(cell.getElementsByTagName('mml:segments')) > 0:
-            prefix="mml:"
 
-        segments = cell.getElementsByTagName(prefix+'segments')[0]
+
+        segments = cell.morphology.segments
 
         distpoints = {}
 
-        for segment in segments.getElementsByTagName(prefix+'segment'):
+        for segment in segments:
 
-            id = int(segment.getAttribute('id'))
+            id = int(segment.id)
 
-            distal = segment.getElementsByTagName(prefix+'distal')[0]
+            distal = segment.distal
 
-            x = float(distal.getAttribute('x'))
-            y = float(distal.getAttribute('y'))
-            z = float(distal.getAttribute('z'))
-            r = float(distal.getAttribute('diameter'))/2.0
+            x = float(distal.x)
+            y = float(distal.y)
+            z = float(distal.z)
+            r = float(distal.diameter)/2.0
 
             if x<minXc: minXc=x
             if y<minYc: minYc=y
@@ -239,12 +248,11 @@ light_source {
             distpoints[id] = distalpoint
 
             proximalpoint = ""
-            if len(segment.getElementsByTagName(prefix+'proximal'))>0:
-                proximal = segment.getElementsByTagName(prefix+'proximal')[0]
-                proximalpoint = "<%f, %f, %f>, %f "%(float(proximal.getAttribute('x')),float(proximal.getAttribute('y')),float(proximal.getAttribute('z')),float(proximal.getAttribute('diameter'))/2.0)
+            if segment.proximal is not None:
+                proximal = segment.proximal
+                proximalpoint = "<%f, %f, %f>, %f "%(float(proximal.x),float(proximal.y),float(proximal.z),float(proximal.diameter)/2.0)
             else:
-
-                parent = int(segment.getAttribute('parent'))
+                parent = int(segment.parent.segments)
                 proximalpoint = distpoints[parent]
 
             shape = "cone"
@@ -269,49 +277,51 @@ light_source {
         pov_file.write("#include \""+cf+"\"\n\n")
         pov_file.write("#include \""+nf+"\"\n\n")
 
-    popsElement = neuroml.getElementsByTagName('populations')[0]
 
-    popElements = popsElement.getElementsByTagName('population')
+    popElements = nml_doc.networks[0].populations
 
     print "There are %i populations in the file"%len(popElements)
 
     for pop in popElements:
 
-        name = pop.getAttribute('name')
-        celltype = pop.getAttribute('cell_type')
-        instances = pop.getElementsByTagName('instance')
+        name = pop.id
+        celltype = pop.component
+        instances = pop.instances
 
         info = "Population: %s has %i cells of type: %s"%(name,len(instances),celltype)
         print info
 
         colour = "1"
-        if len(pop.getElementsByTagName('meta:properties')) > 0:
-            props = pop.getElementsByTagName('meta:properties')
-            if len(props[0].getElementsByTagName('meta:property')) > 0:
+        '''
+        if pop.annotation:
+            print dir(pop.annotation)
+            print pop.annotation.anytypeobjs_
+            print pop.annotation.member_data_items_[0].name
+            print dir(pop.annotation.member_data_items_[0])
+            for prop in pop.annotation.anytypeobjs_:
+                print prop
 
-                for prop in props[0].getElementsByTagName('meta:property'):
-
-                    if len(prop.getElementsByTagName('meta:tag'))>0 and prop.getElementsByTagName('meta:tag')[0].childNodes[0].data == 'color':
-                        #print prop.getElementsByTagName('meta:tag')[0].childNodes
-                        colour = prop.getElementsByTagName('meta:value')[0].childNodes[0].data
-                        colour = colour.replace(" ", ",")
-                    elif prop.hasAttribute('tag') and prop.getAttribute('tag') == 'color':
-                        colour = prop.getAttribute('value')
-                        colour = colour.replace(" ", ",")
-                    print "Colour determined to be: "+colour
-
+                if len(prop.getElementsByTagName('meta:tag'))>0 and prop.getElementsByTagName('meta:tag')[0].childNodes[0].data == 'color':
+                    #print prop.getElementsByTagName('meta:tag')[0].childNodes
+                    colour = prop.getElementsByTagName('meta:value')[0].childNodes[0].data
+                    colour = colour.replace(" ", ",")
+                elif prop.hasAttribute('tag') and prop.getAttribute('tag') == 'color':
+                    colour = prop.getAttribute('value')
+                    colour = colour.replace(" ", ",")
+                print "Colour determined to be: "+colour
+        '''
 
         net_file.write("\n\n/* "+info+" */\n\n")
 
         for instance in instances:
 
-            location = instance.getElementsByTagName('location')[0]
-            id = instance.getAttribute('id')
+            location = instance.location
+            id = instance.id
             net_file.write("object {\n")
             net_file.write("    %s\n"%declaredcells[celltype])
-            x = float(location.getAttribute('x'))
-            y = float(location.getAttribute('y'))
-            z = float(location.getAttribute('z'))
+            x = float(location.x)
+            y = float(location.y)
+            z = float(location.z)
 
             if x+minXc<minX: minX=x+minXc
             if y+minYc<minY: minY=y+minYc
