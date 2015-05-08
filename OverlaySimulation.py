@@ -126,15 +126,21 @@ def main (argv):
         t=0.0
         
         
-        while t<=args.endTime:
+        while t<=args.endTime and len(line)>0:
             line = file.readline()
-            if t>=args.startTime:
-                colour = get_rainbow_color_for_volts(float(line), args) if args.rainbow else get_color_for_volts(float(line), args)
-                volt.append(colour)
-                for i in range(args.skip-1):
-                    line = file.readline()
-                    t=t+dt
-            t=t+dt
+            #print("t: %s, line: %s"%(t, line))
+            if len(line)>0:
+                if t>=args.startTime:
+                    if len(line.split('\t')) > 1:
+                        value = float(line.split('\t')[1])
+                    else:
+                        value = float(line)
+                    colour = get_rainbow_color_for_volts(value, args) if args.rainbow else get_color_for_volts(value, args)
+                    volt.append(colour)
+                    for i in range(args.skip-1):
+                        line = file.readline()
+                        t=t+dt
+                t=t+dt
 
         volts[cell_ref] = volt
         print "Saved data for cell ref %s"%cell_ref
@@ -167,9 +173,13 @@ def main (argv):
                     ref = line.strip()[2:]
                     if volts.has_key(ref):
                         vs = volts[ref]
-                        out_file.write("         "+vs[index]+"//"+ref+" t= "+str(t)+"\n")
+                        out_file.write("         "+vs[index]+" //"+ref+" t= "+str(t)+"\n")
+                    elif volts.has_key(ref+".0"):
+                        vs = volts[ref+".0"]
+                        out_file.write("         "+vs[index]+" //"+ref+" t= "+str(t)+"\n")
                     else:
-                        out_file.write("No ref there: "+ref+"\n")
+                        out_file.write("//       No ref there: "+ref+"\n")
+                        print("Missing ref: "+ref)
 
 
                 else:

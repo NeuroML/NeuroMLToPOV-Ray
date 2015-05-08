@@ -132,7 +132,7 @@ POV-Ray file generated from NeuroML network
 background {rgbt %s}
 
 light_source {
-  <500,200,500>
+  <1500,200,1500>
   color rgb <1,1,1>
 }
 
@@ -145,7 +145,7 @@ light_source {
   color rgb <1,1,1>
 }
 light_source {
-  <-500,-200,-500>
+  <-1500,200,-1500>
   color rgb <1,1,1>
 }
 
@@ -284,8 +284,9 @@ light_source {
         name = pop.id
         celltype = pop.component
         instances = pop.instances
+        
 
-        info = "Population: %s has %i cells of type: %s"%(name,len(instances),celltype)
+        info = "Population: %s has %i positioned cells of type: %s"%(name,len(instances),celltype)
         print(info)
 
         colour = "1"
@@ -339,6 +340,61 @@ light_source {
             net_file.write("\n    //%s_%s\n"%(name, id)) 
 
             net_file.write("}\n")
+            
+        if len(instances) == 0 and int(pop.size>0):
+            
+            info = "Population: %s has %i unpositioned cells of type: %s"%(name,pop.size,celltype)
+            print(info)
+
+            colour = "1"
+            '''
+            if pop.annotation:
+                print dir(pop.annotation)
+                print pop.annotation.anytypeobjs_
+                print pop.annotation.member_data_items_[0].name
+                print dir(pop.annotation.member_data_items_[0])
+                for prop in pop.annotation.anytypeobjs_:
+                    print prop
+
+                    if len(prop.getElementsByTagName('meta:tag'))>0 and prop.getElementsByTagName('meta:tag')[0].childNodes[0].data == 'color':
+                        #print prop.getElementsByTagName('meta:tag')[0].childNodes
+                        colour = prop.getElementsByTagName('meta:value')[0].childNodes[0].data
+                        colour = colour.replace(" ", ",")
+                    elif prop.hasAttribute('tag') and prop.getAttribute('tag') == 'color':
+                        colour = prop.getAttribute('value')
+                        colour = colour.replace(" ", ",")
+                    print "Colour determined to be: "+colour
+            '''
+
+            net_file.write("\n\n/* "+info+" */\n\n")
+
+
+            net_file.write("object {\n")
+            net_file.write("    %s\n"%declaredcells[celltype])
+            x = 0
+            y = 0
+            z = 0
+
+            if x+minXc<minX: minX=x+minXc
+            if y+minYc<minY: minY=y+minYc
+            if z+minZc<minZ: minZ=z+minZc
+
+            if x+maxXc>maxX: maxX=x+maxXc
+            if y+maxYc>maxY: maxY=y+maxYc
+            if z+maxZc>maxZ: maxZ=z+maxZc
+
+            net_file.write("    translate <%s, %s, %s>\n"%(x,y,z))
+
+            if colour == '1':
+                colour = "%f,%f,%f"%(random.random(),random.random(),random.random())
+
+            if colour is not None:
+                net_file.write("    pigment { color rgb <%s> }"%(colour))
+
+            net_file.write("\n    //%s_%s\n"%(name, id)) 
+
+            net_file.write("}\n")
+            
 
 
     plane = '''
@@ -410,7 +466,11 @@ Pause_when_Done=off
         ini_file.write(ini_movie%(pov_file_name, args.frames))
         ini_file.close()
         
-        print("Created file for generating %i movie frames at: %s"%(args.frames,ini_file_name))
+        print("Created file for generating %i movie frames at: %s. To run this type:\n\n    povray %s\n"%(args.frames,ini_file_name,ini_file_name))
+        
+    else:
+        
+        print("Created file for generating image of network. To run this type:\n\n    povray %s\n"%(pov_file_name))
 
 
 if __name__ == '__main__':
