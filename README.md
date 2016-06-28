@@ -1,6 +1,8 @@
 NeuroMLToPOV-Ray
 ----------------
 
+### Note: the latest version of this export to POV-Ray has been moved to [pyNeuroML](https://github.com/NeuroML/pyNeuroML). See [here](https://github.com/NeuroML/pyNeuroML/tree/master/pyneuroml/povray). This repo can still be used for converting NeuroML v1.8.1 files to POV-Ray
+
 Converting NeuroML v1.8.1 and v2.0 files to POV-Ray: http://www.povray.org
 
 **Still in development! Use with caution!**
