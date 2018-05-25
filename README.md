@@ -1,8 +1,10 @@
 NeuroMLToPOV-Ray
 ----------------
 
-### Note: the latest version of this export to POV-Ray has been moved to [pyNeuroML](https://github.com/NeuroML/pyNeuroML). First step [here](https://github.com/NeuroML/pyNeuroML/blob/master/examples/export_neuroml2.py) than second step [here](https://github.com/NeuroML/pyNeuroML/blob/f65953414e391da9b1169c6a5d0e4883358c7094/test.sh#L87-L89), See also [here](https://github.com/NeuroML/pyNeuroML/tree/master/pyneuroml/povray). 
-### This repo can still be used for converting NeuroML v1.8.1 files to POV-Ray
+### Note: the latest version of this export to POV-Ray has been moved to [pyNeuroML](https://github.com/NeuroML/pyNeuroML). For exporting NML2 from NEURON use [this](https://github.com/NeuroML/pyNeuroML/blob/master/examples/export_neuroml2.py) and then use pynml-povray (see [here](https://github.com/NeuroML/pyNeuroML/blob/f65953414e391da9b1169c6a5d0e4883358c7094/test.sh#L87-L89)). See also [here](https://github.com/NeuroML/pyNeuroML/tree/master/pyneuroml/povray). 
+### This repo can still be used for converting _NeuroML v1.8.1_ files to POV-Ray
+
+-------------------------------
 
 Converting NeuroML v1.8.1 and v2.0 files to POV-Ray: http://www.povray.org
 
